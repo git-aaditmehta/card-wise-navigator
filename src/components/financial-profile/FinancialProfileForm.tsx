@@ -1,255 +1,223 @@
 
 import React, { useState } from 'react';
-import { ChevronRight, ChevronLeft } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { useToast } from '@/components/ui/use-toast';
-import FinancialProfileStep from './FinancialProfileStep';
 import FinancialProfileStepper from './FinancialProfileStepper';
 import FinancialProfileAssessment from './FinancialProfileAssessment';
 import ExpenditurePatternAnalysis from './ExpenditurePatternAnalysis';
 import BehavioralMetrics from './BehavioralMetrics';
 import LifestyleIndicators from './LifestyleIndicators';
 import AspirationalFactors from './AspirationalFactors';
+import { toast } from '@/hooks/use-toast';
+
+export interface FinancialProfileData {
+  // Financial Profile Assessment
+  annualIncome?: string;
+  debtToIncomeRatio?: {
+    monthlyDebt?: string;
+    monthlyIncome?: string;
+  };
+  creditScore?: string;
+  financialObligations?: {
+    homeLoan?: { selected: boolean; payment?: string };
+    carLoan?: { selected: boolean; payment?: string };
+    personalLoan?: { selected: boolean; payment?: string };
+    educationLoan?: { selected: boolean; payment?: string };
+    creditCardBalances?: { selected: boolean; total?: string };
+    other?: { selected: boolean; details?: string };
+  };
+
+  // Expenditure Pattern Analysis
+  monthlySpending?: {
+    groceries?: string;
+    diningOut?: string;
+    fuel?: string;
+    onlineShopping?: string;
+    utilities?: string;
+    entertainment?: string;
+    travel?: string;
+    healthcare?: string;
+    other?: string;
+  };
+  transactionFrequency?: {
+    weeklyTransactions?: string;
+    averageValue?: string;
+    largestExpense?: string;
+  };
+  seasonalSpending?: {
+    highestMonths?: string[];
+    seasonalCategories?: string[];
+    annualPurchases?: string;
+  };
+
+  // Behavioral Metrics
+  paymentHabits?: string;
+  cardUsage?: {
+    spendingPercentage?: string;
+    activeCards?: string;
+    primaryCardPercentage?: string;
+  };
+  preferredPaymentMethods?: {
+    smallPurchases?: string;
+    largePurchases?: string;
+    onlineTransactions?: string;
+    recurringBills?: string;
+  };
+
+  // Lifestyle Indicators
+  travelFrequency?: {
+    domesticTrips?: string;
+    internationalTrips?: string;
+    averageSpending?: string;
+    accommodation?: string;
+  };
+  shoppingPreferences?: {
+    onlinePercentage?: string;
+    favoriteRetailers?: string;
+    monthlyDiscretionary?: string;
+    topCategories?: string[];
+  };
+  lifestyleActivities?: string[];
+
+  // Aspirational Factors
+  rewardPreferences?: {
+    cashback?: string;
+    travelMiles?: string;
+    shoppingDiscounts?: string;
+    diningBenefits?: string;
+    entertainmentPerks?: string;
+  };
+  premiumServices?: string[];
+  feeTolerance?: {
+    maxAnnualFee?: string;
+    justifyingFeatures?: string;
+    minimumValue?: string;
+  };
+  cardPrestige?: string;
+}
 
 const FinancialProfileForm = () => {
-  const { toast } = useToast();
-  const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState({
-    // Financial Profile Assessment
-    annualIncome: 75000,
-    debtToIncomeRatio: {
-      monthlyDebt: 0,
-      monthlyIncome: 0,
-      notSure: true
-    },
-    creditScoreRange: 'unknown',
-    financialObligations: [],
-    customObligations: [],
-    
-    // Expenditure Pattern Analysis
-    monthlySpending: {
-      groceries: 500,
-      diningOut: 300,
-      fuelTransportation: 150,
-      onlineShopping: 400,
-      utilities: 250,
-      entertainment: 200,
-      travel: 200,
-      healthcare: 150,
-      other: 250
-    },
-    transactionFrequency: {
-      weeklyTransactions: 15,
-      averageTransactionValue: 200,
-      largestRecurringExpense: 1000
-    },
-    seasonalSpending: {
-      highestSpendingMonths: '',
-      seasonalCategories: '',
-      annualLargePurchases: ''
-    },
-    
-    // Behavioral Metrics
-    paymentHabits: 'fullBalance',
-    cardUsage: {
-      monthlySpendingPercentage: 60,
-      activeCards: 2,
-      primaryCardPercentage: 80
-    },
-    preferredPaymentMethods: {
-      everydayPurchases: '',
-      largePurchases: '',
-      onlineTransactions: '',
-      recurringBills: ''
-    },
-    
-    // Lifestyle Indicators
-    travelFrequency: {
-      domesticTrips: 2,
-      internationalTrips: 1,
-      averageSpending: 50000,
-      accommodationPreferences: ''
-    },
-    shoppingPreferences: {
-      onlinePercentage: 70,
-      favoriteRetailers: '',
-      discretionarySpending: 10000,
-      topCategories: ''
-    },
-    lifestyleActivities: [],
-    customActivities: '',
-    
-    // Aspirational Factors
-    rewardPreferences: {
-      cashback: 1,
-      travelMiles: 3,
-      shoppingDiscounts: 2,
-      diningBenefits: 4,
-      entertainmentPerks: 5
-    },
-    premiumServices: [],
-    feeTolerances: {
-      maximumAnnualFee: 5000,
-      justifyingFeatures: '',
-      minimumRewardValue: 10000
-    },
-    prestigeImportance: 'somewhat'
-  });
+  const [currentStep, setCurrentStep] = useState(1);
+  const [formData, setFormData] = useState<FinancialProfileData>({});
 
   const totalSteps = 5;
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Profile data submitted:", formData);
-    toast({
-      title: "Profile created!",
-      description: "Your comprehensive financial profile has been saved successfully.",
-      duration: 3000,
+  const handleStepSubmit = (stepData: Record<string, any>) => {
+    updateFormData(stepData);
+    
+    if (currentStep < totalSteps) {
+      setCurrentStep(currentStep + 1);
+    } else {
+      handleFinalSubmit();
+    }
+  };
+
+  const updateFormData = (newData: Record<string, any>) => {
+    setFormData((prevData) => {
+      return { ...prevData, ...newData };
     });
   };
 
-  const nextStep = () => {
-    if (step < totalSteps) {
-      setStep(step + 1);
-      window.scrollTo(0, 0);
-    } else {
-      handleSubmit(new Event('submit') as unknown as React.FormEvent);
+  const handleSectionData = (section: string, data: Record<string, any>) => {
+    updateFormData({ [section]: data });
+  };
+
+  const handleFinalSubmit = () => {
+    console.log('Submitted form data:', formData);
+    toast({
+      title: "Financial Profile Submitted",
+      description: "We'll analyze your profile and recommend the best credit cards for you.",
+    });
+    // Here you would typically send the data to an API endpoint
+  };
+
+  const handlePreviousStep = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
     }
   };
 
-  const prevStep = () => {
-    if (step > 1) {
-      setStep(step - 1);
-      window.scrollTo(0, 0);
-    }
-  };
-
-  // Fixed type error by correctly defining the expected type parameters
-  const updateFormData = (section: string, data: Record<string, any>) => {
-    setFormData(prev => ({
-      ...prev,
-      [section]: {
-        ...prev[section as keyof typeof prev],
-        ...data
-      }
-    }));
-  };
-
-  // Fixed type error by correctly defining the expected type parameters
-  const updateNestedFormData = (section: string, subsection: string, data: any) => {
-    if (section === '') {
-      // Handle top-level updates
-      setFormData(prev => ({
-        ...prev,
-        [subsection]: data
-      }));
-    } else {
-      // Handle nested updates
-      setFormData(prev => ({
-        ...prev,
-        [section]: {
-          ...prev[section as keyof typeof prev],
-          [subsection]: data
-        }
-      }));
+  const getCurrentStepComponent = () => {
+    switch (currentStep) {
+      case 1:
+        return (
+          <FinancialProfileAssessment
+            onSubmit={handleStepSubmit}
+            initialData={formData.financialAssessment || {}}
+          />
+        );
+      case 2:
+        return (
+          <ExpenditurePatternAnalysis
+            onSubmit={handleStepSubmit}
+            initialData={formData.expenditurePattern || {}}
+          />
+        );
+      case 3:
+        return (
+          <BehavioralMetrics
+            onSubmit={handleStepSubmit}
+            initialData={formData.behavioralMetrics || {}}
+          />
+        );
+      case 4:
+        return (
+          <LifestyleIndicators
+            onSubmit={handleStepSubmit}
+            initialData={formData.lifestyleIndicators || {}}
+          />
+        );
+      case 5:
+        return (
+          <AspirationalFactors
+            onSubmit={handleStepSubmit}
+            initialData={formData.aspirationalFactors || {}}
+          />
+        );
+      default:
+        return null;
     }
   };
 
   return (
-    <div id="profile" className="py-16 bg-gradient-to-b from-white to-blue-50">
+    <section id="profile" className="py-16 bg-gray-50">
       <div className="container mx-auto px-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-blue-700">Create Your Financial Profile</h2>
-            <p className="text-foreground/70 text-lg">
-              Help us understand your financial situation and preferences to provide personalized card recommendations
-            </p>
-          </div>
-
-          <FinancialProfileStepper currentStep={step} totalSteps={totalSteps} />
-
-          <Card className="shadow-lg">
-            <CardHeader>
-              <CardTitle className="text-blue-700">
-                {step === 1 ? 'Financial Profile Assessment' : 
-                 step === 2 ? 'Expenditure Pattern Analysis' :
-                 step === 3 ? 'Behavioral Metrics' :
-                 step === 4 ? 'Lifestyle Indicators' :
-                 'Aspirational Factors'}
-              </CardTitle>
-              <CardDescription>
-                {step === 1 ? 'Tell us about your financial situation' : 
-                 step === 2 ? 'Help us understand your spending patterns' :
-                 step === 3 ? 'Share your credit card usage habits' :
-                 step === 4 ? 'Let us know about your lifestyle' :
-                 'Tell us about your preferences and aspirations'}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={(e) => e.preventDefault()}>
-                <FinancialProfileStep isActive={step === 1}>
-                  <FinancialProfileAssessment 
-                    formData={formData} 
-                    updateFormData={updateFormData}
-                    updateNestedFormData={updateNestedFormData}
-                  />
-                </FinancialProfileStep>
-                
-                <FinancialProfileStep isActive={step === 2}>
-                  <ExpenditurePatternAnalysis 
-                    formData={formData} 
-                    updateFormData={(section, data) => updateNestedFormData('monthlySpending', section, data)}
-                    updateNestedFormData={updateNestedFormData}
-                  />
-                </FinancialProfileStep>
-                
-                <FinancialProfileStep isActive={step === 3}>
-                  <BehavioralMetrics 
-                    formData={formData} 
-                    updateFormData={(data) => setFormData({...formData, ...data})}
-                    updateNestedFormData={updateNestedFormData}
-                  />
-                </FinancialProfileStep>
-                
-                <FinancialProfileStep isActive={step === 4}>
-                  <LifestyleIndicators 
-                    formData={formData} 
-                    updateFormData={(data) => setFormData({...formData, ...data})}
-                    updateNestedFormData={updateNestedFormData}
-                  />
-                </FinancialProfileStep>
-                
-                <FinancialProfileStep isActive={step === 5}>
-                  <AspirationalFactors 
-                    formData={formData} 
-                    updateFormData={(data) => setFormData({...formData, ...data})}
-                    updateNestedFormData={updateNestedFormData}
-                  />
-                </FinancialProfileStep>
-              </form>
-            </CardContent>
-            <CardFooter className="flex justify-between">
-              {step > 1 ? (
-                <Button variant="outline" onClick={prevStep}>
-                  <ChevronLeft className="mr-2 h-4 w-4" />
-                  Back
-                </Button>
-              ) : (
-                <div></div>
-              )}
-              <Button 
-                onClick={nextStep}
-                className="bg-blue-600 hover:bg-blue-700"
-              >
-                {step < totalSteps ? 'Continue' : 'Get Recommendations'}
-                <ChevronRight className="ml-2 h-4 w-4" />
-              </Button>
-            </CardFooter>
-          </Card>
+        <div className="text-center mb-10">
+          <h2 className="text-3xl font-bold text-cardwise-blue-500">Create Your Financial Profile</h2>
+          <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
+            Answer a few questions about your financial situation, spending habits, and preferences
+            to get personalized credit card recommendations.
+          </p>
         </div>
+
+        <Card className="max-w-4xl mx-auto shadow-md">
+          <CardContent className="p-0">
+            <div className="bg-cardwise-blue-50 p-6 border-b">
+              <FinancialProfileStepper currentStep={currentStep} totalSteps={totalSteps} />
+            </div>
+            <div className="p-6">
+              {getCurrentStepComponent()}
+              
+              <div className="flex justify-between mt-8">
+                {currentStep > 1 ? (
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    onClick={handlePreviousStep}
+                  >
+                    Previous
+                  </Button>
+                ) : (
+                  <div></div>
+                )}
+                
+                {/* Form submission is handled by the individual step components */}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
-    </div>
+    </section>
   );
 };
 
