@@ -125,7 +125,8 @@ const FinancialProfileForm = () => {
     }
   };
 
-  const updateFormData = (section: string, data: any) => {
+  // Fixed type error by correctly defining the expected type parameters
+  const updateFormData = (section: string, data: Record<string, any>) => {
     setFormData(prev => ({
       ...prev,
       [section]: {
@@ -135,14 +136,24 @@ const FinancialProfileForm = () => {
     }));
   };
 
+  // Fixed type error by correctly defining the expected type parameters
   const updateNestedFormData = (section: string, subsection: string, data: any) => {
-    setFormData(prev => ({
-      ...prev,
-      [section]: {
-        ...prev[section as keyof typeof prev],
+    if (section === '') {
+      // Handle top-level updates
+      setFormData(prev => ({
+        ...prev,
         [subsection]: data
-      }
-    }));
+      }));
+    } else {
+      // Handle nested updates
+      setFormData(prev => ({
+        ...prev,
+        [section]: {
+          ...prev[section as keyof typeof prev],
+          [subsection]: data
+        }
+      }));
+    }
   };
 
   return (
@@ -180,7 +191,7 @@ const FinancialProfileForm = () => {
                 <FinancialProfileStep isActive={step === 1}>
                   <FinancialProfileAssessment 
                     formData={formData} 
-                    updateFormData={(data) => updateFormData('debtToIncomeRatio', data)}
+                    updateFormData={updateFormData}
                     updateNestedFormData={updateNestedFormData}
                   />
                 </FinancialProfileStep>

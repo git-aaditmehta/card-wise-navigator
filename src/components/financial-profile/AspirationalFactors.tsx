@@ -1,12 +1,12 @@
 
 import React from 'react';
-import { Star, Plane, Gift, Utensils, Film, Shield, Medal, Briefcase } from 'lucide-react';
+import { Gem, Star, Clock, Award, Shield, CreditCard } from 'lucide-react';
 import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Slider } from '@/components/ui/slider';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface AspirationalFactorsProps {
   formData: any;
@@ -19,7 +19,11 @@ const AspirationalFactors: React.FC<AspirationalFactorsProps> = ({
   updateFormData,
   updateNestedFormData
 }) => {
-  const handleServiceChange = (service: string, checked: boolean) => {
+  const handleRewardPriorityChange = (type: string, value: number) => {
+    updateNestedFormData('rewardPreferences', type, value);
+  };
+
+  const handlePremiumServiceChange = (service: string, checked: boolean) => {
     let newServices = [...formData.premiumServices];
     
     if (checked) {
@@ -39,122 +43,103 @@ const AspirationalFactors: React.FC<AspirationalFactorsProps> = ({
           <Star className="h-4 w-4 text-blue-500" />
           Reward Preferences
         </Label>
-        <div className="text-sm text-muted-foreground mb-2">
-          Rank from 1-5, with 1 being most important to you
+        <div className="text-sm text-muted-foreground mb-4">
+          Rank each reward type from 1 (most important) to 5 (least important)
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-6">
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="cashback" className="flex items-center">
-                <Star className="h-4 w-4 mr-1 text-blue-500" />
-                Cashback on purchases
-              </Label>
-              <Select
-                value={formData.rewardPreferences.cashback.toString()}
-                onValueChange={(value) => updateNestedFormData('rewardPreferences', 'cashback', parseInt(value))}
-              >
-                <SelectTrigger className="w-20">
-                  <SelectValue placeholder="Rank" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="1">1</SelectItem>
-                  <SelectItem value="2">2</SelectItem>
-                  <SelectItem value="3">3</SelectItem>
-                  <SelectItem value="4">4</SelectItem>
-                  <SelectItem value="5">5</SelectItem>
-                </SelectContent>
-              </Select>
+              <Label>Cashback on purchases</Label>
+              <span className="font-semibold text-blue-600">{formData.rewardPreferences.cashback}</span>
             </div>
-            
-            <div className="flex items-center justify-between">
-              <Label htmlFor="travelMiles" className="flex items-center">
-                <Plane className="h-4 w-4 mr-1 text-blue-500" />
-                Travel miles/points
-              </Label>
-              <Select
-                value={formData.rewardPreferences.travelMiles.toString()}
-                onValueChange={(value) => updateNestedFormData('rewardPreferences', 'travelMiles', parseInt(value))}
-              >
-                <SelectTrigger className="w-20">
-                  <SelectValue placeholder="Rank" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="1">1</SelectItem>
-                  <SelectItem value="2">2</SelectItem>
-                  <SelectItem value="3">3</SelectItem>
-                  <SelectItem value="4">4</SelectItem>
-                  <SelectItem value="5">5</SelectItem>
-                </SelectContent>
-              </Select>
+            <Slider
+              value={[formData.rewardPreferences.cashback]}
+              min={1}
+              max={5}
+              step={1}
+              onValueChange={(value) => handleRewardPriorityChange('cashback', value[0])}
+              className="py-2"
+            />
+            <div className="flex justify-between text-xs text-muted-foreground pt-1">
+              <span>Most Important</span>
+              <span>Least Important</span>
             </div>
           </div>
           
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="shoppingDiscounts" className="flex items-center">
-                <Gift className="h-4 w-4 mr-1 text-blue-500" />
-                Shopping discounts
-              </Label>
-              <Select
-                value={formData.rewardPreferences.shoppingDiscounts.toString()}
-                onValueChange={(value) => updateNestedFormData('rewardPreferences', 'shoppingDiscounts', parseInt(value))}
-              >
-                <SelectTrigger className="w-20">
-                  <SelectValue placeholder="Rank" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="1">1</SelectItem>
-                  <SelectItem value="2">2</SelectItem>
-                  <SelectItem value="3">3</SelectItem>
-                  <SelectItem value="4">4</SelectItem>
-                  <SelectItem value="5">5</SelectItem>
-                </SelectContent>
-              </Select>
+              <Label>Travel miles/points</Label>
+              <span className="font-semibold text-blue-600">{formData.rewardPreferences.travelMiles}</span>
             </div>
-            
-            <div className="flex items-center justify-between">
-              <Label htmlFor="diningBenefits" className="flex items-center">
-                <Utensils className="h-4 w-4 mr-1 text-blue-500" />
-                Dining benefits
-              </Label>
-              <Select
-                value={formData.rewardPreferences.diningBenefits.toString()}
-                onValueChange={(value) => updateNestedFormData('rewardPreferences', 'diningBenefits', parseInt(value))}
-              >
-                <SelectTrigger className="w-20">
-                  <SelectValue placeholder="Rank" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="1">1</SelectItem>
-                  <SelectItem value="2">2</SelectItem>
-                  <SelectItem value="3">3</SelectItem>
-                  <SelectItem value="4">4</SelectItem>
-                  <SelectItem value="5">5</SelectItem>
-                </SelectContent>
-              </Select>
+            <Slider
+              value={[formData.rewardPreferences.travelMiles]}
+              min={1}
+              max={5}
+              step={1}
+              onValueChange={(value) => handleRewardPriorityChange('travelMiles', value[0])}
+              className="py-2"
+            />
+            <div className="flex justify-between text-xs text-muted-foreground pt-1">
+              <span>Most Important</span>
+              <span>Least Important</span>
             </div>
-            
+          </div>
+          
+          <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="entertainmentPerks" className="flex items-center">
-                <Film className="h-4 w-4 mr-1 text-blue-500" />
-                Entertainment perks
-              </Label>
-              <Select
-                value={formData.rewardPreferences.entertainmentPerks.toString()}
-                onValueChange={(value) => updateNestedFormData('rewardPreferences', 'entertainmentPerks', parseInt(value))}
-              >
-                <SelectTrigger className="w-20">
-                  <SelectValue placeholder="Rank" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="1">1</SelectItem>
-                  <SelectItem value="2">2</SelectItem>
-                  <SelectItem value="3">3</SelectItem>
-                  <SelectItem value="4">4</SelectItem>
-                  <SelectItem value="5">5</SelectItem>
-                </SelectContent>
-              </Select>
+              <Label>Shopping discounts</Label>
+              <span className="font-semibold text-blue-600">{formData.rewardPreferences.shoppingDiscounts}</span>
+            </div>
+            <Slider
+              value={[formData.rewardPreferences.shoppingDiscounts]}
+              min={1}
+              max={5}
+              step={1}
+              onValueChange={(value) => handleRewardPriorityChange('shoppingDiscounts', value[0])}
+              className="py-2"
+            />
+            <div className="flex justify-between text-xs text-muted-foreground pt-1">
+              <span>Most Important</span>
+              <span>Least Important</span>
+            </div>
+          </div>
+          
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label>Dining benefits</Label>
+              <span className="font-semibold text-blue-600">{formData.rewardPreferences.diningBenefits}</span>
+            </div>
+            <Slider
+              value={[formData.rewardPreferences.diningBenefits]}
+              min={1}
+              max={5}
+              step={1}
+              onValueChange={(value) => handleRewardPriorityChange('diningBenefits', value[0])}
+              className="py-2"
+            />
+            <div className="flex justify-between text-xs text-muted-foreground pt-1">
+              <span>Most Important</span>
+              <span>Least Important</span>
+            </div>
+          </div>
+          
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label>Entertainment perks</Label>
+              <span className="font-semibold text-blue-600">{formData.rewardPreferences.entertainmentPerks}</span>
+            </div>
+            <Slider
+              value={[formData.rewardPreferences.entertainmentPerks]}
+              min={1}
+              max={5}
+              step={1}
+              onValueChange={(value) => handleRewardPriorityChange('entertainmentPerks', value[0])}
+              className="py-2"
+            />
+            <div className="flex justify-between text-xs text-muted-foreground pt-1">
+              <span>Most Important</span>
+              <span>Least Important</span>
             </div>
           </div>
         </div>
@@ -163,45 +148,43 @@ const AspirationalFactors: React.FC<AspirationalFactorsProps> = ({
       {/* Premium Services */}
       <div className="space-y-4 pt-4 border-t">
         <Label className="text-lg font-medium flex items-center gap-2">
-          <Medal className="h-4 w-4 text-blue-500" />
+          <Award className="h-4 w-4 text-blue-500" />
           Premium Services
         </Label>
         <div className="text-sm text-muted-foreground mb-2">
-          Select all premium services that would enhance your lifestyle
+          Select premium services that would enhance your lifestyle
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-3">
+          <div className="space-y-4">
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="airportLounge"
                 checked={formData.premiumServices.includes('airportLounge')}
                 onCheckedChange={(checked) => {
-                  handleServiceChange('airportLounge', checked === true);
+                  handlePremiumServiceChange('airportLounge', checked === true);
                 }}
               />
               <label
                 htmlFor="airportLounge"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
-                <Plane className="h-4 w-4 mr-1 text-blue-500" />
                 Airport lounge access
               </label>
             </div>
             
             <div className="flex items-center space-x-2">
               <Checkbox
-                id="concierge"
-                checked={formData.premiumServices.includes('concierge')}
+                id="conciergeServices"
+                checked={formData.premiumServices.includes('conciergeServices')}
                 onCheckedChange={(checked) => {
-                  handleServiceChange('concierge', checked === true);
+                  handlePremiumServiceChange('conciergeServices', checked === true);
                 }}
               />
               <label
-                htmlFor="concierge"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center"
+                htmlFor="conciergeServices"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
-                <Briefcase className="h-4 w-4 mr-1 text-blue-500" />
                 Concierge services
               </label>
             </div>
@@ -211,14 +194,13 @@ const AspirationalFactors: React.FC<AspirationalFactorsProps> = ({
                 id="priorityCheckIn"
                 checked={formData.premiumServices.includes('priorityCheckIn')}
                 onCheckedChange={(checked) => {
-                  handleServiceChange('priorityCheckIn', checked === true);
+                  handlePremiumServiceChange('priorityCheckIn', checked === true);
                 }}
               />
               <label
                 htmlFor="priorityCheckIn"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
-                <Plane className="h-4 w-4 mr-1 text-blue-500" />
                 Priority check-in at hotels/airports
               </label>
             </div>
@@ -228,33 +210,31 @@ const AspirationalFactors: React.FC<AspirationalFactorsProps> = ({
                 id="exclusiveEvents"
                 checked={formData.premiumServices.includes('exclusiveEvents')}
                 onCheckedChange={(checked) => {
-                  handleServiceChange('exclusiveEvents', checked === true);
+                  handlePremiumServiceChange('exclusiveEvents', checked === true);
                 }}
               />
               <label
                 htmlFor="exclusiveEvents"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
-                <Star className="h-4 w-4 mr-1 text-blue-500" />
                 Exclusive event access
               </label>
             </div>
           </div>
           
-          <div className="space-y-3">
+          <div className="space-y-4">
             <div className="flex items-center space-x-2">
               <Checkbox
-                id="chauffeur"
-                checked={formData.premiumServices.includes('chauffeur')}
+                id="chauffeurServices"
+                checked={formData.premiumServices.includes('chauffeurServices')}
                 onCheckedChange={(checked) => {
-                  handleServiceChange('chauffeur', checked === true);
+                  handlePremiumServiceChange('chauffeurServices', checked === true);
                 }}
               />
               <label
-                htmlFor="chauffeur"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center"
+                htmlFor="chauffeurServices"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
-                <Car className="h-4 w-4 mr-1 text-blue-500" />
                 Chauffeur services
               </label>
             </div>
@@ -264,14 +244,13 @@ const AspirationalFactors: React.FC<AspirationalFactorsProps> = ({
                 id="extendedWarranty"
                 checked={formData.premiumServices.includes('extendedWarranty')}
                 onCheckedChange={(checked) => {
-                  handleServiceChange('extendedWarranty', checked === true);
+                  handlePremiumServiceChange('extendedWarranty', checked === true);
                 }}
               />
               <label
                 htmlFor="extendedWarranty"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
-                <Shield className="h-4 w-4 mr-1 text-blue-500" />
                 Extended warranty on purchases
               </label>
             </div>
@@ -281,14 +260,13 @@ const AspirationalFactors: React.FC<AspirationalFactorsProps> = ({
                 id="purchaseProtection"
                 checked={formData.premiumServices.includes('purchaseProtection')}
                 onCheckedChange={(checked) => {
-                  handleServiceChange('purchaseProtection', checked === true);
+                  handlePremiumServiceChange('purchaseProtection', checked === true);
                 }}
               />
               <label
                 htmlFor="purchaseProtection"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
-                <Shield className="h-4 w-4 mr-1 text-blue-500" />
                 Purchase protection insurance
               </label>
             </div>
@@ -298,14 +276,13 @@ const AspirationalFactors: React.FC<AspirationalFactorsProps> = ({
                 id="emergencyAssistance"
                 checked={formData.premiumServices.includes('emergencyAssistance')}
                 onCheckedChange={(checked) => {
-                  handleServiceChange('emergencyAssistance', checked === true);
+                  handlePremiumServiceChange('emergencyAssistance', checked === true);
                 }}
               />
               <label
                 htmlFor="emergencyAssistance"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
-                <Shield className="h-4 w-4 mr-1 text-blue-500" />
                 Emergency assistance services
               </label>
             </div>
@@ -316,11 +293,11 @@ const AspirationalFactors: React.FC<AspirationalFactorsProps> = ({
       {/* Fee Tolerance */}
       <div className="space-y-4 pt-4 border-t">
         <Label className="text-lg font-medium flex items-center gap-2">
-          <Medal className="h-4 w-4 text-blue-500" />
+          <CreditCard className="h-4 w-4 text-blue-500" />
           Fee Tolerance
         </Label>
         
-        <div className="grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="maximumFee">Maximum annual fee you would consider (₹)</Label>
             <div className="relative">
@@ -333,18 +310,6 @@ const AspirationalFactors: React.FC<AspirationalFactorsProps> = ({
                 className="pl-8"
               />
             </div>
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="justifyingFeatures">Features that would justify a higher annual fee</Label>
-            <Textarea
-              id="justifyingFeatures"
-              placeholder="e.g., Higher cashback, Premium travel benefits"
-              value={formData.feeTolerances.justifyingFeatures}
-              onChange={(e) => updateNestedFormData('feeTolerances', 'justifyingFeatures', e.target.value)}
-              className="resize-none"
-              rows={3}
-            />
           </div>
           
           <div className="space-y-2">
@@ -361,12 +326,24 @@ const AspirationalFactors: React.FC<AspirationalFactorsProps> = ({
             </div>
           </div>
         </div>
+        
+        <div className="space-y-2 mt-2">
+          <Label htmlFor="justifyingFeatures">Features that would justify a higher annual fee</Label>
+          <Textarea
+            id="justifyingFeatures"
+            placeholder="e.g., Lounge access, higher cashback rate, better insurance coverage"
+            value={formData.feeTolerances.justifyingFeatures}
+            onChange={(e) => updateNestedFormData('feeTolerances', 'justifyingFeatures', e.target.value)}
+            className="resize-none"
+            rows={3}
+          />
+        </div>
       </div>
 
-      {/* Card Status Importance */}
+      {/* Card Prestige Importance */}
       <div className="space-y-4 pt-4 border-t">
         <Label className="text-lg font-medium flex items-center gap-2">
-          <Medal className="h-4 w-4 text-blue-500" />
+          <Gem className="h-4 w-4 text-blue-500" />
           Card Status/Prestige Importance
         </Label>
         
@@ -376,41 +353,41 @@ const AspirationalFactors: React.FC<AspirationalFactorsProps> = ({
           className="grid gap-3 pt-2"
         >
           <Label
-            htmlFor="notImportant"
+            htmlFor="not-important"
             className="flex flex-col space-y-1 border rounded-lg p-4 cursor-pointer hover:bg-muted transition-colors"
           >
             <div className="flex items-center space-x-2">
-              <RadioGroupItem value="notImportant" id="notImportant" />
+              <RadioGroupItem value="not" id="not-important" />
               <span className="font-medium">Not important at all</span>
             </div>
             <span className="text-sm text-muted-foreground pl-6">
-              I'm only interested in the practical benefits
+              I'm only interested in the practical benefits and rewards
             </span>
           </Label>
           
           <Label
-            htmlFor="somewhat"
+            htmlFor="somewhat-important"
             className="flex flex-col space-y-1 border rounded-lg p-4 cursor-pointer hover:bg-muted transition-colors"
           >
             <div className="flex items-center space-x-2">
-              <RadioGroupItem value="somewhat" id="somewhat" />
+              <RadioGroupItem value="somewhat" id="somewhat-important" />
               <span className="font-medium">Somewhat important</span>
             </div>
             <span className="text-sm text-muted-foreground pl-6">
-              Nice to have but not my primary concern
+              I'd like a card with some prestige, but it's not my primary concern
             </span>
           </Label>
           
           <Label
-            htmlFor="veryImportant"
+            htmlFor="very-important"
             className="flex flex-col space-y-1 border rounded-lg p-4 cursor-pointer hover:bg-muted transition-colors"
           >
             <div className="flex items-center space-x-2">
-              <RadioGroupItem value="veryImportant" id="veryImportant" />
+              <RadioGroupItem value="very" id="very-important" />
               <span className="font-medium">Very important</span>
             </div>
             <span className="text-sm text-muted-foreground pl-6">
-              It's a significant factor in my decision
+              The status associated with the card is a significant factor for me
             </span>
           </Label>
           
@@ -423,7 +400,7 @@ const AspirationalFactors: React.FC<AspirationalFactorsProps> = ({
               <span className="font-medium">Essential</span>
             </div>
             <span className="text-sm text-muted-foreground pl-6">
-              Status and prestige are top priorities for me
+              I'm primarily looking for a premium/prestige card
             </span>
           </Label>
         </RadioGroup>
