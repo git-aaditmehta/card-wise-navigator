@@ -13,7 +13,7 @@ const Hero = () => {
               Maximize Your Credit Card Benefits
             </h1>
             <p className="text-lg text-foreground/80 md:pr-12">
-              CardWise helps you choose the perfect credit cards based on your spending habits and unlock rewards you never knew existed.
+              CardMatch Pro helps you choose the perfect credit cards based on your spending habits and unlock rewards you never knew existed.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <Button className="bg-cardmatch-cyan hover:bg-cardmatch-cyan/90 text-cardmatch-navy font-medium px-6 py-6 h-auto rounded-full">
