@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -57,7 +56,7 @@ const cardRecommendations = [
 
 const CardRecommendations = () => {
   return (
-    <div className="py-16 bg-cardwise-blue-50">
+    <section id="features" className="py-16 bg-cardwise-blue-50">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold gradient-heading mb-4">Your Top Card Recommendations</h2>
@@ -147,7 +146,7 @@ const CardRecommendations = () => {
           ))}
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

@@ -1,29 +1,58 @@
-
 import React, { useState } from 'react';
 import { Menu, X, CreditCard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const navigateToSection = (sectionId: string) => {
+    if (location.pathname !== '/') {
+      navigate('/');
+      // Allow time for navigation to complete before scrolling
+      setTimeout(() => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    } else {
+      // Already on home page, just scroll
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+    if (isMenuOpen) {
+      setIsMenuOpen(false);
+    }
   };
 
   return (
     <header className="fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b border-border">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <CreditCard className="h-7 w-7 text-cardwise-teal-500" />
-          <h1 className="text-xl font-bold text-cardwise-blue-500">CardWise</h1>
+          <Link to="/">
+            <CreditCard className="h-7 w-7 text-cardwise-teal-500" />
+          </Link>
+          <Link to="/" className="text-xl font-bold text-cardwise-blue-500">CardWise</Link>
         </div>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-6">
-          <a href="#features" className="text-foreground/80 hover:text-cardwise-teal-500 transition-colors">Features</a>
-          <a href="#compare" className="text-foreground/80 hover:text-cardwise-teal-500 transition-colors">Compare Cards</a>
-          <a href="#profile" className="text-foreground/80 hover:text-cardwise-teal-500 transition-colors">Create Profile</a>
-          <Button className="bg-cardwise-teal-500 hover:bg-cardwise-teal-600">Get Started</Button>
+          <button onClick={() => navigateToSection('features')} className="text-foreground/80 hover:text-cardwise-teal-500 transition-colors">Features</button>
+          <button onClick={() => navigateToSection('compare')} className="text-foreground/80 hover:text-cardwise-teal-500 transition-colors">Compare Cards</button>
+          <Link to="/learning-center" className="text-foreground/80 hover:text-cardwise-teal-500 transition-colors">Learning Center</Link>
+          <button onClick={() => navigateToSection('profile')} className="text-foreground/80 hover:text-cardwise-teal-500 transition-colors">Create Profile</button>
+          <Button className="bg-cardwise-teal-500 hover:bg-cardwise-teal-600" asChild>
+            <Link to="/">Get Started</Link>
+          </Button>
         </nav>
 
         {/* Mobile Menu Button */}
@@ -41,28 +70,34 @@ const Header = () => {
       {isMenuOpen && (
         <div className="md:hidden bg-white border-b border-border">
           <div className="container mx-auto py-4 px-4 flex flex-col space-y-4">
-            <a 
-              href="#features" 
-              className="text-foreground/80 hover:text-cardwise-teal-500 transition-colors py-2" 
-              onClick={toggleMenu}
+            <button 
+              onClick={() => navigateToSection('features')}
+              className="text-left text-foreground/80 hover:text-cardwise-teal-500 transition-colors py-2"
             >
               Features
-            </a>
-            <a 
-              href="#compare" 
-              className="text-foreground/80 hover:text-cardwise-teal-500 transition-colors py-2"
-              onClick={toggleMenu}
+            </button>
+            <button 
+              onClick={() => navigateToSection('compare')}
+              className="text-left text-foreground/80 hover:text-cardwise-teal-500 transition-colors py-2"
             >
               Compare Cards
-            </a>
-            <a 
-              href="#profile" 
+            </button>
+            <Link 
+              to="/learning-center" 
               className="text-foreground/80 hover:text-cardwise-teal-500 transition-colors py-2"
               onClick={toggleMenu}
             >
+              Learning Center
+            </Link>
+            <button 
+              onClick={() => navigateToSection('profile')}
+              className="text-left text-foreground/80 hover:text-cardwise-teal-500 transition-colors py-2"
+            >
               Create Profile
-            </a>
-            <Button className="bg-cardwise-teal-500 hover:bg-cardwise-teal-600 w-full">Get Started</Button>
+            </button>
+            <Button className="bg-cardwise-teal-500 hover:bg-cardwise-teal-600 w-full" asChild>
+              <Link to="/" onClick={toggleMenu}>Get Started</Link>
+            </Button>
           </div>
         </div>
       )}

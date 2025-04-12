@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -157,7 +156,7 @@ const FinancialProfileForm = () => {
   };
 
   return (
-    <div id="profile" className="py-16 bg-gradient-to-b from-white to-blue-50">
+    <section id="profile" className="py-16 bg-gradient-to-b from-white to-blue-50">
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
@@ -249,7 +248,7 @@ const FinancialProfileForm = () => {
           </Card>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 
