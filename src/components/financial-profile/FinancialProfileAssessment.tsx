@@ -5,11 +5,10 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Slider } from '@/components/ui/slider';
 
 interface FinancialProfileAssessmentProps {
   formData: any;
-  updateFormData: (data: any) => void;
+  updateFormData: (section: string, data: Record<string, any>) => void;
   updateNestedFormData: (section: string, subsection: string, data: any) => void;
 }
 
@@ -18,8 +17,18 @@ const FinancialProfileAssessment: React.FC<FinancialProfileAssessmentProps> = ({
   updateFormData,
   updateNestedFormData
 }) => {
+  // Safely access properties with default values
+  const annualIncome = formData?.annualIncome || 0;
+  const debtToIncomeRatio = formData?.debtToIncomeRatio || {
+    monthlyDebt: 0,
+    monthlyIncome: 0,
+    notSure: true
+  };
+  const creditScoreRange = formData?.creditScoreRange || 'unknown';
+  const financialObligations = formData?.financialObligations || [];
+
   const handleObligationChange = (obligation: string, checked: boolean) => {
-    let newObligations = [...formData.financialObligations];
+    let newObligations = [...financialObligations];
     
     if (checked) {
       newObligations.push(obligation);
@@ -46,7 +55,7 @@ const FinancialProfileAssessment: React.FC<FinancialProfileAssessmentProps> = ({
           <Input
             type="number"
             id="income"
-            value={formData.annualIncome}
+            value={annualIncome}
             onChange={(e) => updateNestedFormData('', 'annualIncome', parseInt(e.target.value) || 0)}
             className="pl-8"
           />
@@ -75,10 +84,10 @@ const FinancialProfileAssessment: React.FC<FinancialProfileAssessmentProps> = ({
               <Input
                 type="number"
                 id="monthlyDebt"
-                value={formData.debtToIncomeRatio.monthlyDebt}
-                onChange={(e) => updateFormData({ monthlyDebt: parseInt(e.target.value) || 0 })}
+                value={debtToIncomeRatio.monthlyDebt}
+                onChange={(e) => updateNestedFormData('debtToIncomeRatio', 'monthlyDebt', parseInt(e.target.value) || 0)}
                 className="pl-8"
-                disabled={formData.debtToIncomeRatio.notSure}
+                disabled={debtToIncomeRatio.notSure}
               />
             </div>
           </div>
@@ -90,10 +99,10 @@ const FinancialProfileAssessment: React.FC<FinancialProfileAssessmentProps> = ({
               <Input
                 type="number"
                 id="monthlyIncome"
-                value={formData.debtToIncomeRatio.monthlyIncome}
-                onChange={(e) => updateFormData({ monthlyIncome: parseInt(e.target.value) || 0 })}
+                value={debtToIncomeRatio.monthlyIncome}
+                onChange={(e) => updateNestedFormData('debtToIncomeRatio', 'monthlyIncome', parseInt(e.target.value) || 0)}
                 className="pl-8"
-                disabled={formData.debtToIncomeRatio.notSure}
+                disabled={debtToIncomeRatio.notSure}
               />
             </div>
           </div>
@@ -102,9 +111,9 @@ const FinancialProfileAssessment: React.FC<FinancialProfileAssessmentProps> = ({
         <div className="flex items-center space-x-2 mt-2">
           <Checkbox
             id="notSure"
-            checked={formData.debtToIncomeRatio.notSure}
+            checked={debtToIncomeRatio.notSure}
             onCheckedChange={(checked) => {
-              updateFormData({ notSure: checked === true });
+              updateNestedFormData('debtToIncomeRatio', 'notSure', checked === true);
             }}
           />
           <label
@@ -123,7 +132,7 @@ const FinancialProfileAssessment: React.FC<FinancialProfileAssessmentProps> = ({
           Credit Score Range
         </Label>
         <RadioGroup 
-          value={formData.creditScoreRange}
+          value={creditScoreRange}
           onValueChange={(value) => updateNestedFormData('', 'creditScoreRange', value)}
           className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 pt-2"
         >
@@ -165,7 +174,7 @@ const FinancialProfileAssessment: React.FC<FinancialProfileAssessmentProps> = ({
             <div className="flex items-start space-x-2">
               <Checkbox
                 id="homeLoan"
-                checked={formData.financialObligations.includes('homeLoan')}
+                checked={financialObligations.includes('homeLoan')}
                 onCheckedChange={(checked) => {
                   handleObligationChange('homeLoan', checked === true);
                 }}
@@ -178,7 +187,7 @@ const FinancialProfileAssessment: React.FC<FinancialProfileAssessmentProps> = ({
                   <Home className="h-4 w-4 mr-1 text-blue-500" />
                   Home loan/mortgage
                 </label>
-                {formData.financialObligations.includes('homeLoan') && (
+                {financialObligations.includes('homeLoan') && (
                   <div className="relative mt-1">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-xs">₹</span>
                     <Input
@@ -194,7 +203,7 @@ const FinancialProfileAssessment: React.FC<FinancialProfileAssessmentProps> = ({
             <div className="flex items-start space-x-2">
               <Checkbox
                 id="carLoan"
-                checked={formData.financialObligations.includes('carLoan')}
+                checked={financialObligations.includes('carLoan')}
                 onCheckedChange={(checked) => {
                   handleObligationChange('carLoan', checked === true);
                 }}
@@ -207,7 +216,7 @@ const FinancialProfileAssessment: React.FC<FinancialProfileAssessmentProps> = ({
                   <Car className="h-4 w-4 mr-1 text-blue-500" />
                   Car loan
                 </label>
-                {formData.financialObligations.includes('carLoan') && (
+                {financialObligations.includes('carLoan') && (
                   <div className="relative mt-1">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-xs">₹</span>
                     <Input
@@ -223,7 +232,7 @@ const FinancialProfileAssessment: React.FC<FinancialProfileAssessmentProps> = ({
             <div className="flex items-start space-x-2">
               <Checkbox
                 id="personalLoan"
-                checked={formData.financialObligations.includes('personalLoan')}
+                checked={financialObligations.includes('personalLoan')}
                 onCheckedChange={(checked) => {
                   handleObligationChange('personalLoan', checked === true);
                 }}
@@ -236,7 +245,7 @@ const FinancialProfileAssessment: React.FC<FinancialProfileAssessmentProps> = ({
                   <FileText className="h-4 w-4 mr-1 text-blue-500" />
                   Personal loan
                 </label>
-                {formData.financialObligations.includes('personalLoan') && (
+                {financialObligations.includes('personalLoan') && (
                   <div className="relative mt-1">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-xs">₹</span>
                     <Input
@@ -254,7 +263,7 @@ const FinancialProfileAssessment: React.FC<FinancialProfileAssessmentProps> = ({
             <div className="flex items-start space-x-2">
               <Checkbox
                 id="educationLoan"
-                checked={formData.financialObligations.includes('educationLoan')}
+                checked={financialObligations.includes('educationLoan')}
                 onCheckedChange={(checked) => {
                   handleObligationChange('educationLoan', checked === true);
                 }}
@@ -267,7 +276,7 @@ const FinancialProfileAssessment: React.FC<FinancialProfileAssessmentProps> = ({
                   <GraduationCap className="h-4 w-4 mr-1 text-blue-500" />
                   Education loan
                 </label>
-                {formData.financialObligations.includes('educationLoan') && (
+                {financialObligations.includes('educationLoan') && (
                   <div className="relative mt-1">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-xs">₹</span>
                     <Input
@@ -283,7 +292,7 @@ const FinancialProfileAssessment: React.FC<FinancialProfileAssessmentProps> = ({
             <div className="flex items-start space-x-2">
               <Checkbox
                 id="creditCardBalance"
-                checked={formData.financialObligations.includes('creditCardBalance')}
+                checked={financialObligations.includes('creditCardBalance')}
                 onCheckedChange={(checked) => {
                   handleObligationChange('creditCardBalance', checked === true);
                 }}
@@ -296,7 +305,7 @@ const FinancialProfileAssessment: React.FC<FinancialProfileAssessmentProps> = ({
                   <CreditCard className="h-4 w-4 mr-1 text-blue-500" />
                   Existing credit card balances
                 </label>
-                {formData.financialObligations.includes('creditCardBalance') && (
+                {financialObligations.includes('creditCardBalance') && (
                   <div className="relative mt-1">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-xs">₹</span>
                     <Input
@@ -312,7 +321,7 @@ const FinancialProfileAssessment: React.FC<FinancialProfileAssessmentProps> = ({
             <div className="flex items-start space-x-2">
               <Checkbox
                 id="otherObligations"
-                checked={formData.financialObligations.includes('otherObligations')}
+                checked={financialObligations.includes('otherObligations')}
                 onCheckedChange={(checked) => {
                   handleObligationChange('otherObligations', checked === true);
                 }}
@@ -325,7 +334,7 @@ const FinancialProfileAssessment: React.FC<FinancialProfileAssessmentProps> = ({
                   <FileText className="h-4 w-4 mr-1 text-blue-500" />
                   Other significant recurring commitments
                 </label>
-                {formData.financialObligations.includes('otherObligations') && (
+                {financialObligations.includes('otherObligations') && (
                   <Input
                     type="text"
                     placeholder="Specify other commitments"
